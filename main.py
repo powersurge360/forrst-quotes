@@ -2,9 +2,9 @@
 
 #   _   _  ___ _____   _____ _   _ _   _ _   ___   __
 #  | \ | |/ _ \_   _| |  ___| | | | \ | | \ | \ \ / /
-#  |  \| | | | || |   | |_  | | | |  \| |  \| |\ V / 
-#  | |\  | |_| || |   |  _| | |_| | |\  | |\  | | |  
-#  |_| \_|\___/ |_|   |_|    \___/|_| \_|_| \_| |_|                                                    
+#  |  \| | | | || |   | |_  | | | |  \| |  \| |\ V /
+#  | |\  | |_| || |   |  _| | |_| | |\  | |\  | | |
+#  |_| \_|\___/ |_|   |_|    \___/|_| \_|_| \_| |_|
 
 from google.appengine.ext import webapp, db
 from google.appengine.ext.webapp import util
@@ -14,7 +14,9 @@ import datetime, cgi, json, hashlib
 class QuoteDB(db.Model):
     quoteMD5    = db.StringProperty()
     quoteString = db.StringProperty(multiline=True)
-    dateAdded   = db.DateTimeProperty(auto_now_add=True)
+    created     = db.DateTimeProperty(auto_now_add=True)
+    votesUp     = db.IntegerProperty()
+    votesDown   = db.IntegerProperty()
 
 
 class JSONDumper(webapp.RequestHandler):
@@ -31,41 +33,89 @@ class JSONDumper(webapp.RequestHandler):
             self.response.headers['Content-Type'] = 'application/json'
             self.response.out.write(json.dumps(data))
 
-
-class QuoteAPIAdd(JSONDumper):
+"""
+    Handler class responsible for interacting with single quotes
+"""
+class QuoteAPI(JSONDumper):
     """
-        POST - Add a quote.
-        Params: quote. If you can't figure out what that's for...
-        Response: JSON with the id.
+        GET - Get all quotes or a single one
+        Params: id. to get a single quote
+        Returns: JSON object(s) of quote(s)
     """
-    def post(self):
-        key   = hashlib.md5(self.request.get('quote')).hexdigest()
-        quote = QuoteDB(key_name=cgi.escape(key))
-        quote.quoteMD5    = key
-        quote.quoteString = cgi.escape(self.request.get('quote'))
-        quoteID = quote.put()
-
-        self.dump({"status" : "Yeah, whatever", "id" : quoteID.name() })
+    def get(self, id=None):
+        if id:
+            self._get_single(id)
+        else:
+            self._get_all()
 
 
-class QuoteAPIList(JSONDumper):
+    """
+        GET - Get a single quote
+        Params: id. The md5 digest of the quote
+        Response: quote object
+    """
+    def _get_single(self, id):
+        try:
+            quote = QuoteDB.get_by_key_name(id)
+            self.dump({
+                "id": quote.quoteMD5,
+                "quote": quote.quoteString,
+                "created": quote.created.isoformat(),
+                "votes": {
+                    "up": quote.votesUp,
+                    "down": quote.votesDown
+                }
+            })
+        except db.BadKeyError, e:
+            self.response.set_status(404)
+            self.dump({"error": "no such id"})
+
+
     """
         GET - List all the quotes.
         Params: nada
         Response: A lot of JSON...
     """
-    def get(self):
+    def _get_all(self):
         # GET ALL THE FUNNAY
-        res = {"status" : "Yeah, whatever", "quotes":[] }
+        res = []
         quotes = db.GqlQuery("SELECT * FROM QuoteDB")
-        for funnay in quotes:
-            res['quotes'].append({
-                "id"    : funnay.quoteMD5,
-                "quote" : funnay.quoteString
+        for quote in quotes:
+            res.append({
+                "id": quote.quoteMD5,
+                "quote": quote.quoteString,
+                "created": quote.created.isoformat(),
+                "votes": {
+                    "up": quote.votesUp,
+                    "down": quote.votesDown
+                }
             })
 
         self.dump(res)
-            
+
+
+    """
+        POST - Add a quote.
+        Params: quote. If you can't figure out what that's for...
+        Response: id of the new quote
+    """
+    def post(self):
+        quoteStr = cgi.escape(self.request.get('quote').strip())
+        if quoteStr:
+            key   = hashlib.md5(quoteStr).hexdigest()
+            quote = QuoteDB(key_name=cgi.escape(key))
+            quote.quoteMD5 = key
+            quote.quoteString = quoteStr
+            quote.votesUp = 0
+            quote.votesDown = 0
+            quoteID = quote.put()
+
+            self.response.set_status(201) # created
+            self.dump({"id" : quoteID.name() })
+        else:
+            self.response.set_status(406)
+            self.dump({"error": "need quote"})
+
 
 class MainHandler(webapp.RequestHandler):
     def get(self):
@@ -73,10 +123,12 @@ class MainHandler(webapp.RequestHandler):
 
 
 def main():
-    application = webapp.WSGIApplication([('/', MainHandler),
-                                        ('/api/add', QuoteAPIAdd),
-                                        ('/api/list', QuoteAPIList),
-                                        ], debug=True)
+    mapping = [
+        ('/', MainHandler),
+        ('/api/quote', QuoteAPI),
+        ('/api/quote/([a-f\d]{32})', QuoteAPI)
+    ]
+    application = webapp.WSGIApplication(mapping, debug=True)
     util.run_wsgi_app(application)
 
 if __name__ == '__main__':
