@@ -19,7 +19,7 @@ class QuoteDB(db.Model):
 
 class JSONDumper(webapp.RequestHandler):
     """
-        DUMP - dump some json to the client and handle jsonp requests correctly
+        Dump some json to the client and handle jsonp requests correctly
         Params: data. The data to dump as json
     """
     def dump(self, data):
