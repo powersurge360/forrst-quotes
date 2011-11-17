@@ -9,7 +9,9 @@
 from google.appengine.ext import webapp, db
 from google.appengine.ext.webapp import util
 
-import datetime, cgi, json, hashlib
+import simplejson as json
+
+import datetime, cgi, hashlib
 
 class QuoteDB(db.Model):
     quoteMD5    = db.StringProperty()
