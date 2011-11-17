@@ -1,0 +1,46 @@
+body
+{
+    background: url('/images/background.png') repeat top left;
+}
+
+#top
+{
+    background: url('/images/top_background.png') repeat bottom left;
+    height:     80px;
+}
+
+    #top header
+    {
+        background: url('/images/ranger.png') no-repeat bottom left;
+        color:      #fff;
+        height:     80px;
+    }
+
+        #top header h1
+        {
+            font-size:   18px;
+            line-height: 1.2;
+            margin:      15px 0px 0px 45px;
+            text-align:  center;
+            text-shadow: 1px 1px #000;
+            width:       120px;
+        }
+
+            #top header nav
+            {
+                float:      right;
+                margin-top: 30px;
+            }
+
+                #top header nav ul li
+                {
+                    display: inline-block;
+                }
+
+.quote
+{
+    background: #F7F7F7;
+    border:     1px solid #C3C8BD;
+    margin-top: 20px;
+    padding:    5px 10px;
+}
