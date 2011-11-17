@@ -35,9 +35,6 @@ class JSONDumper(webapp.RequestHandler):
             self.response.headers['Content-Type'] = 'application/json'
             self.response.out.write(json.dumps(data))
 
-"""
-    Handler class responsible for interacting with single quotes
-"""
 class QuoteAPI(JSONDumper):
     """
         GET - Get all quotes or a single one
