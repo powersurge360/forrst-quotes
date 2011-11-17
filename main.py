@@ -20,11 +20,12 @@ class QuoteDB(db.Model):
 
 
 class JSONDumper(webapp.RequestHandler):
-    """
-        Dump some json to the client and handle jsonp requests correctly
-        Params: data. The data to dump as json
-    """
     def dump(self, data):
+        """
+            Dump some json to the client and handle jsonp requests correctly
+            Params: data. The data to dump as json
+        """
+
         if self.request.get('callback'):
             self.response.headers['Content-Type'] = 'text/javascript'
             self.response.out.write(
@@ -33,28 +34,26 @@ class JSONDumper(webapp.RequestHandler):
             self.response.headers['Content-Type'] = 'application/json'
             self.response.out.write(json.dumps(data))
 
-"""
-    Handler class responsible for interacting with single quotes
-"""
+
 class QuoteAPI(JSONDumper):
-    """
-        GET - Get all quotes or a single one
-        Params: id. to get a single quote
-        Returns: JSON object(s) of quote(s)
-    """
     def get(self, id=None):
+        """
+            GET - Get all quotes or a single one
+            Params: id. to get a single quote
+            Returns: JSON object(s) of quote(s)
+        """
+
         if id:
             self._get_single(id)
         else:
             self._get_all()
 
-
-    """
-        GET - Get a single quote
-        Params: id. The md5 digest of the quote
-        Response: quote object
-    """
     def _get_single(self, id):
+        """
+            GET - Get a single quote
+            Params: id. The md5 digest of the quote
+            Response: quote object
+        """
         try:
             quote = QuoteDB.get_by_key_name(id)
             self.dump({
@@ -70,13 +69,12 @@ class QuoteAPI(JSONDumper):
             self.response.set_status(404)
             self.dump({"error": "no such id"})
 
-
-    """
-        GET - List all the quotes.
-        Params: nada
-        Response: A lot of JSON...
-    """
     def _get_all(self):
+        """
+            GET - List all the quotes.
+            Params: nada
+            Response: A lot of JSON...
+        """
         # GET ALL THE FUNNAY
         res = []
         quotes = db.GqlQuery("SELECT * FROM QuoteDB")
@@ -93,14 +91,15 @@ class QuoteAPI(JSONDumper):
 
         self.dump(res)
 
-
-    """
-        POST - Add a quote.
-        Params: quote. If you can't figure out what that's for...
-        Response: id of the new quote
-    """
     def post(self):
+        """
+            POST - Add a quote.
+            Params: quote. If you can't figure out what that's for...
+            Response: id of the new quote
+        """
+
         quoteStr = cgi.escape(self.request.get('quote').strip())
+
         if quoteStr:
             key   = hashlib.md5(quoteStr).hexdigest()
             quote = QuoteDB(key_name=cgi.escape(key))
@@ -120,7 +119,6 @@ class QuoteAPI(JSONDumper):
 class MainHandler(webapp.RequestHandler):
     def get(self):
         self.response.out.write(open('./index.html').read())
-
 
 def main():
     mapping = [
