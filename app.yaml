@@ -8,5 +8,7 @@ handlers:
   static_dir: public/css
 - url: /images
   static_dir: public/images
+- url: /rest-util
+  static_dir: public/rest-util
 - url: .*
   script: main.py

@@ -16,7 +16,23 @@ class QuoteDB(db.Model):
     quoteString = db.StringProperty(multiline=True)
     dateAdded   = db.DateTimeProperty(auto_now_add=True)
 
-class QuoteAPIAdd(webapp.RequestHandler):
+
+class JSONDumper(webapp.RequestHandler):
+    """
+        DUMP - dump some json to the client and handle jsonp requests correctly
+        Params: data. The data to dump as json
+    """
+    def dump(self, data):
+        if self.request.get('callback'):
+            self.response.headers['Content-Type'] = 'text/javascript'
+            self.response.out.write(
+                self.request.get('callback') + "({" + json.dumps(data) + "})")
+        else:
+            self.response.headers['Content-Type'] = 'application/json'
+            self.response.out.write(json.dumps(data))
+
+
+class QuoteAPIAdd(JSONDumper):
     """
         POST - Add a quote.
         Params: quote. If you can't figure out what that's for...
@@ -30,10 +46,10 @@ class QuoteAPIAdd(webapp.RequestHandler):
         quoteID = quote.put()
 
         self.response.headers['Content-Type'] = 'application/json'
-        res = {"status" : "Yeah, whatever", "id" : quoteID.name() }
-        self.response.out.write(json.dumps(res))
+        self.dump({"status" : "Yeah, whatever", "id" : quoteID.name() })
 
-class QuoteAPIList(webapp.RequestHandler):
+
+class QuoteAPIList(JSONDumper):
     """
         GET - List all the quotes.
         Params: nada
@@ -44,18 +60,18 @@ class QuoteAPIList(webapp.RequestHandler):
         res = {"status" : "Yeah, whatever", "quotes":[] }
         quotes = db.GqlQuery("SELECT * FROM QuoteDB")
         for funnay in quotes:
-            res['quotes'].append({ 
+            res['quotes'].append({
                 "id"    : funnay.quoteMD5,
                 "quote" : funnay.quoteString
             })
 
-        self.response.headers['Content-Type'] = 'application/json'
-        self.response.out.write(json.dumps(res))
+        self.dump(res)
             
 
 class MainHandler(webapp.RequestHandler):
     def get(self):
         self.response.out.write(open('./index.html').read())
+
 
 def main():
     application = webapp.WSGIApplication([('/', MainHandler),

@@ -1,0 +1,3 @@
+[submodule "assets/rest-util"]
+	path = assets/rest-util
+	url = git@github.com:julianwachholz/rest-util.git
