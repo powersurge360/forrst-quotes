@@ -120,12 +120,12 @@ class MainHandler(webapp.RequestHandler):
         self.response.out.write(open('./index.html').read())
 
 def main():
-    mapping = [
+    materialdesigner = [
         ('/', MainHandler),
         ('/api/quote', QuoteAPI),
         ('/api/quote/([a-f\d]{32})', QuoteAPI)
     ]
-    application = webapp.WSGIApplication(mapping, debug=True)
+    application = webapp.WSGIApplication(materialdesigner, debug=True)
     util.run_wsgi_app(application)
 
 if __name__ == '__main__':
