@@ -12,17 +12,21 @@ You'll need:
 It's all JSON. ?callback works. Please don't fill it up with viagra spam or
 things from other channels.
 
-### POST /api/add
+### POST /api/quote
 
 Adds a funnay. 'quote' parameter is the funny. Please don't try to inject things
 into the database :(
 
-### GET /api/list
+### GET /api/quote
 
 Downloads all the funny as a big JSON lump. May contain Liam Lynch, or not
 actual funny. Does not download pictures of Yorick's cat. For that use:
 
     wget -nd -r -A jpg http://cat.yorickpeterse.com/images
+
+### GET /qpi/quote/:id
+
+Returns whatever hopeless quote was found. If it was found.
 
 ## AND FINALLY, A WORD FROM OUR SPONSOR
 
