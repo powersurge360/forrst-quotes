@@ -31,7 +31,13 @@ class QuoteAPIAdd(webapp.RequestHandler):
 
         self.response.headers['Content-Type'] = 'application/json'
         res = {"status" : "Yeah, whatever", "id" : quoteID.name() }
-        self.response.out.write(json.dumps(res))
+        self.response.headers['Contentt-Type'] = 'application/json'
+        if self.request.get('callback'):
+            self.response.out.write(
+                self.request.get('callback') + "({" + json.dumps(res) + "})")
+        else:
+            self.response.out.write(json.dumps(res))
+
 
 class QuoteAPIList(webapp.RequestHandler):
     """
@@ -49,8 +55,12 @@ class QuoteAPIList(webapp.RequestHandler):
                 "quote" : funnay.quoteString
             })
 
-        self.response.headers['Content-Type'] = 'application/json'
-        self.response.out.write(json.dumps(res))
+        self.response.headers['Contentt-Type'] = 'application/json'
+        if self.request.get('callback'):
+            self.response.out.write(
+                self.request.get('callback') + "({" + json.dumps(res) + "})")
+        else:
+            self.response.out.write(json.dumps(res))
             
 
 class MainHandler(webapp.RequestHandler):
