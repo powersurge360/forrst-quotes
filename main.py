@@ -17,6 +17,11 @@ class QuoteDB(db.Model):
     dateAdded   = db.DateTimeProperty(auto_now_add=True)
 
 class QuoteAPIAdd(webapp.RequestHandler):
+    """
+        POST - Add a quote.
+        Params: quote. If you can't figure out what that's for...
+        Response: JSON with the id.
+    """
     def post(self):
         key   = hashlib.md5(self.request.get('quote')).hexdigest()
         quote = QuoteDB(key_name=cgi.escape(key))
@@ -29,6 +34,11 @@ class QuoteAPIAdd(webapp.RequestHandler):
         self.response.out.write(json.dumps(res))
 
 class QuoteAPIList(webapp.RequestHandler):
+    """
+        GET - List all the quotes.
+        Params: nada
+        Response: A lot of JSON...
+    """
     def get(self):
         # GET ALL THE FUNNAY
         res = {"status" : "Yeah, whatever", "quotes":[] }
