@@ -9,7 +9,8 @@
 from google.appengine.ext import webapp, db
 from google.appengine.ext.webapp import util
 
-import datetime, cgi, json, hashlib
+import simplejson as json
+import datetime, cgi, hashlib
 
 class QuoteDB(db.Model):
     quoteMD5    = db.StringProperty()
@@ -17,7 +18,6 @@ class QuoteDB(db.Model):
     created     = db.DateTimeProperty(auto_now_add=True)
     votesUp     = db.IntegerProperty()
     votesDown   = db.IntegerProperty()
-
 
 class JSONDumper(webapp.RequestHandler):
     def dump(self, data):
@@ -33,7 +33,6 @@ class JSONDumper(webapp.RequestHandler):
         else:
             self.response.headers['Content-Type'] = 'application/json'
             self.response.out.write(json.dumps(data))
-
 
 class QuoteAPI(JSONDumper):
     def get(self, id=None):
