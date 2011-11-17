@@ -45,7 +45,6 @@ class QuoteAPIAdd(JSONDumper):
         quote.quoteString = cgi.escape(self.request.get('quote'))
         quoteID = quote.put()
 
-        self.response.headers['Content-Type'] = 'application/json'
         self.dump({"status" : "Yeah, whatever", "id" : quoteID.name() })
 
 
