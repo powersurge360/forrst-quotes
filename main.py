@@ -6,15 +6,11 @@
 #  | |\  | |_| || |   |  _| | |_| | |\  | |\  | | |
 #  |_| \_|\___/ |_|   |_|    \___/|_| \_|_| \_| |_|
 
-from google.appengine.ext import webapp
 from google.appengine.ext.webapp import util
 
+from controller.mainhandler import *
 from controller.jsondumper import *
 from controller.quoteapi import *
-
-class MainHandler(webapp.RequestHandler):
-    def get(self):
-        self.response.out.write(open('./index.html').read())
 
 def main():
     materialdesigner = [
