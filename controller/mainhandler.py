@@ -1,5 +1,9 @@
-from google.appengine.ext import webapp
+from base import *
 
-class MainHandler(webapp.RequestHandler):
+class MainHandler(Base):
     def get(self):
-        self.response.out.write(open('./index.html').read())
+        """
+            GET - Shows the homepage containing a list of quotes.
+        """
+
+        self._render_view('index')
