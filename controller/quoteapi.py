@@ -2,7 +2,8 @@ import datetime, cgi, hashlib
 
 from jsondumper import *
 from google.appengine.ext import db
-from model.quotedb import *
+
+import model
 
 class QuoteAPI(JSONDumper):
     def get(self, id=None):
@@ -24,7 +25,7 @@ class QuoteAPI(JSONDumper):
             Response: quote object
         """
         try:
-            quote = QuoteDB.get_by_key_name(id)
+            quote = model.QuoteDB.get_by_key_name(id)
             self.dump({
                 "id": quote.quoteMD5,
                 "quote": quote.quoteString,
@@ -46,7 +47,8 @@ class QuoteAPI(JSONDumper):
         """
         # GET ALL THE FUNNAY
         res = []
-        quotes = db.GqlQuery("SELECT * FROM QuoteDB")
+        #quotes = db.GqlQuery("SELECT * FROM QuoteDB")
+        quotes = model.QuoteDB.all()
         for quote in quotes:
             res.append({
                 "id": quote.quoteMD5,
@@ -71,7 +73,7 @@ class QuoteAPI(JSONDumper):
 
         if quoteStr:
             key   = hashlib.md5(quoteStr).hexdigest()
-            quote = QuoteDB(key_name=cgi.escape(key))
+            quote = model.QuoteDB(key_name=cgi.escape(key))
             quote.quoteMD5 = key
             quote.quoteString = quoteStr
             quote.votesUp = 0
