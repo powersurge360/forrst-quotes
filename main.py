@@ -6,17 +6,16 @@
 #  | |\  | |_| || |   |  _| | |_| | |\  | |\  | | |
 #  |_| \_|\___/ |_|   |_|    \___/|_| \_|_| \_| |_|
 
+from google.appengine.ext import webapp
 from google.appengine.ext.webapp import util
 
-from controller.mainhandler import *
-from controller.jsondumper import *
-from controller.quoteapi import *
+import controller
 
 def main():
     materialdesigner = [
-        ('/', MainHandler),
-        ('/api/quote', QuoteAPI),
-        ('/api/quote/([a-f\d]{32})', QuoteAPI)
+        (r'/', controller.MainHandler),
+        (r'/api/quote', controller.QuoteAPI),
+        (r'/api/quote/([a-f\d]{32})', controller.QuoteAPI)
     ]
 
     application = webapp.WSGIApplication(materialdesigner, debug=True)
