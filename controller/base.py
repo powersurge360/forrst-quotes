@@ -7,7 +7,7 @@ class Base(webapp.RequestHandler):
         Base controller that makes it easier to render views.
     """
 
-    view_path = "./view/{0}.html"
+    view_path = "./view/%s.html"
 
     def _render_view(self, view, data = {}):
         """
@@ -24,4 +24,4 @@ class Base(webapp.RequestHandler):
                 self._render_view('index', {'quotes': [....]})
         """
 
-        self.response.out.write(template.render(self.view_path.format(view), data))
+        self.response.out.write(template.render(self.view_path % (view), data))
