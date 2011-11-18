@@ -7,6 +7,14 @@ You'll need:
 * We actively use IRCDD (IRC Driven Development) - #forrst-chat on
   fail^H^H^H^Hfreenode
 
+## TODO
+
+* Get the existing funnay out of the bot
+* Fix the front end to display, vote, etc
+* Extend bot to post quotes to site
+* Swallow sadness (LIKE A BOSS)
+* Be less original than we already are
+
 ## YES THERE IS AN API
 
 It's all JSON. ?callback works. Please don't fill it up with viagra spam or
@@ -24,7 +32,7 @@ actual funny. Does not download pictures of Yorick's cat. For that use:
 
     wget -nd -r -A jpg http://cat.yorickpeterse.com/images
 
-### GET /qpi/quote/:id
+### GET /api/quote/:id
 
 Returns whatever hopeless quote was found. If it was found.
 
