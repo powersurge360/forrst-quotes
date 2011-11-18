@@ -3,6 +3,7 @@ from google.appengine.ext import webapp
 from google.appengine.ext.webapp import template
 
 class Base(webapp.RequestHandler):
+    view_path = "./view/{0}.html"
     def _render_view(self, view, data = {}):
         """
             Renders the given view along with the given data and sends it to the
@@ -15,8 +16,7 @@ class Base(webapp.RequestHandler):
                   template.
         """
 
-        view   = template.render(os.path.join('./view', view + '.html'), data)
-        layout = os.path.join('./layout/default.html')
+        #view   = template.render(os.path.join('./view', view + '.html'), data)
+        #layout = os.path.join('./layout/default.html')
 
-        self.response.out.write(template.render(layout, {'content': view}))
-
+        self.response.out.write(template.render(self.view_path.format(view), data))
