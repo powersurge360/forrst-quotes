@@ -1,3 +1,5 @@
+import simplejson as json
+
 from google.appengine.ext import webapp
 
 class JSONDumper(webapp.RequestHandler):

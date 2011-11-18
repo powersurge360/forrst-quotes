@@ -9,12 +9,8 @@
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp import util
 
-from model.quotedb import *
 from controller.jsondumper import *
 from controller.quoteapi import *
-
-import simplejson as json
-import datetime, cgi, hashlib
 
 class MainHandler(webapp.RequestHandler):
     def get(self):

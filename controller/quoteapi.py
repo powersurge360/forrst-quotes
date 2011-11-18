@@ -1,4 +1,8 @@
+import datetime, cgi, hashlib
+
 from jsondumper import *
+from google.appengine.ext import db
+from model.quotedb import *
 
 class QuoteAPI(JSONDumper):
     def get(self, id=None):
