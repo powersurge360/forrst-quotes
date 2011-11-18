@@ -1,5 +1,13 @@
 {% extends 'layout/default.html' %}
 
 {% block content %}
-    This is the way you extend things in django templates!!
+    {% for quote in quotes %}
+    <article>
+        <header>
+            <h1>{{quote.created|date:"Y-m-d"}}</h1>
+        </header>
+
+        <pre>{{quote.quoteString}}</pre>
+    </article>
+    {% endfor %}
 {% endblock %}
