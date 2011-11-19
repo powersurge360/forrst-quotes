@@ -1,4 +1,5 @@
 import cgi, hashlib
+from datetime import datetime
 
 from jsondumper import *
 from google.appengine.ext import db
@@ -88,6 +89,7 @@ class QuoteAPI(JSONDumper):
         """
             POST - Add a quote.
             Params: quote. If you can't figure out what that's for...
+                    date. Optional date of this quote. DO NOT USE EXCEPT YOU ARE SQUEEKS - Format: 'YYYY-MM-DD hh:mm:ss' or without the time
             Response: id of the new quote
         """
 
@@ -106,6 +108,9 @@ class QuoteAPI(JSONDumper):
                     quote.id = id
                     quote.quote = quote_text
                     quote.votes = 0
+                    quote_date = self._parse_date(self._get_arg('date'))
+                    if quote_date:
+                        quote.created = quote_date
                     quoteID = quote.put()
 
                     self.response.set_status(201) # created
@@ -118,3 +123,16 @@ class QuoteAPI(JSONDumper):
             else:
                 self.response.set_status(406)
                 self.dump({"error": "need quote"})
+
+    def _parse_date(self, date_str):
+        """
+            Parse a string to a date using ISO8601 formats
+            Returns a datetime instance or None on failure
+        """
+        try:
+            return datetime.strptime(date_str, '%Y-%m-%d %H:%M:%S')
+        except ValueError:
+            try:
+                return datetime.strptime(date_str, '%Y-%m-%d')
+            except ValueError:
+                return None
