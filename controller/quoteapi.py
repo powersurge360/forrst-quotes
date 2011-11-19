@@ -58,6 +58,8 @@ class QuoteAPI(JSONDumper):
 
         if limit < 0:
             limit = 20
+        elif limit > 1000:
+            limit = 1000
 
         if offset < 0:
             offset = 0
