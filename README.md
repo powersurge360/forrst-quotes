@@ -32,6 +32,13 @@ actual funny. Does not download pictures of Yorick's cat. For that use:
 
     wget -nd -r -A jpg http://cat.yorickpeterse.com/images
 
+Parameters:
+
+* `limit` default 20, max 1000 for heaven's sake
+* `offset` starting from zero
+* `order_by` can be `created` or `votes` - default `created`
+* `order` can be `ASC` or `DESC` - default `DESC`
+
 ### GET /api/quote/:id
 
 Returns whatever hopeless quote was found. If it was found.
