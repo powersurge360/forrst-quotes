@@ -18,10 +18,15 @@ class JSONDumper(webapp.RequestHandler):
             self.response.headers['Content-Type'] = 'application/json'
             self.response.out.write(json.dumps(data))
 
-    def _get_arg(self, arg_name):
+    def _get_arg(self, arg_name, default=''):
         """
             Gets you an escaped GET/POST parameter or None if there is no such argument
             Params: arg_name. obviously.
+                    default. obvious as well.
         """
 
-        return cgi.escape(self.request.get(arg_name).strip())
+        value = self.request.get(arg_name, default)
+        if type(default) is str:
+            value = cgi.escape(value.strip())
+
+        return value
