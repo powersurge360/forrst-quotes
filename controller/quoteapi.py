@@ -44,13 +44,34 @@ class QuoteAPI(JSONDumper):
     def _get_all(self):
         """
             GET - List all the quotes.
-            Params: nada
+            Params: limit. default 20, max 1000 for heaven's sake
+                    offset. starting from zero.
+                    order_by. can be 'created' or 'votes' - default 'created'
+                    order. ASC or DESC - default DESC
             Response: A lot of JSON...
         """
-        # GET ALL THE FUNNAY
+
+        limit = self._get_arg("limit", 20)
+        offset = self._get_arg("offset", 0)
+        order_by = self._get_arg("order_by", "created")
+        order = self._get_arg("order", "DESC")
+
+        if limit < 0:
+            limit = 20
+
+        if offset < 0:
+            offset = 0
+
+        if order_by != "votes":
+            order_by = "created"
+
+        if order != "ASC":
+            order = "DESC"
+
+        # SERIOUSLY GOOGLE Y U TROLL ME? Y U NO MAKE SYMBOLS WORK HERE?
+        quotes = model.QuoteDB.gql("ORDER BY "+order_by+" "+order+" LIMIT "+str(limit)+" OFFSET "+str(offset))
         res = []
-        #quotes = db.GqlQuery("SELECT * FROM QuoteDB")
-        quotes = model.QuoteDB.all()
+
         for quote in quotes:
             res.append({
                 "id": quote.id,
@@ -72,7 +93,7 @@ class QuoteAPI(JSONDumper):
             self.response.set_status(406)
             self.dump({"error": "don't post to a single quote"})
         else:
-            quote_text = self._get_arg('quote')
+            quote_text = self._get_arg("quote")
 
             if quote_text:
                 id = hashlib.md5(quote_text).hexdigest()
