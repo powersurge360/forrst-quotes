@@ -1,3 +1,4 @@
+import cgi
 import simplejson as json
 
 from google.appengine.ext import webapp
@@ -16,3 +17,11 @@ class JSONDumper(webapp.RequestHandler):
         else:
             self.response.headers['Content-Type'] = 'application/json'
             self.response.out.write(json.dumps(data))
+
+    def _get_arg(self, arg_name):
+        """
+            Gets you an escaped GET/POST parameter or None if there is no such argument
+            Params: arg_name. obviously.
+        """
+
+        return cgi.escape(self.request.get(arg_name).strip())

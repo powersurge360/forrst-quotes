@@ -22,7 +22,7 @@ things from other channels.
 
 ### POST /api/quote
 
-Adds a funnay. 'quote' parameter is the funny. Please don't try to inject things
+Adds a funnay. `quote` parameter is the funny. Please don't try to inject things
 into the database :(
 
 ### GET /api/quote
@@ -35,6 +35,11 @@ actual funny. Does not download pictures of Yorick's cat. For that use:
 ### GET /api/quote/:id
 
 Returns whatever hopeless quote was found. If it was found.
+
+### POST /api/vote
+
+Get your quote on top of the charts - supply a `quote_id` (that value should be
+clear) and `vote` with `-1` or `1` as value to vote (once a day per quote).
 
 ## AND FINALLY, A WORD FROM OUR SPONSOR
 

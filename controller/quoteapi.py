@@ -1,4 +1,4 @@
-import datetime, cgi, hashlib
+import cgi, hashlib
 
 from jsondumper import *
 from google.appengine.ext import db
@@ -26,18 +26,20 @@ class QuoteAPI(JSONDumper):
         """
         try:
             quote = model.QuoteDB.get_by_key_name(id)
-            self.dump({
-                "id": quote.quoteMD5,
-                "quote": quote.quoteString,
-                "created": quote.created.isoformat(),
-                "votes": {
-                    "up": quote.votesUp,
-                    "down": quote.votesDown
-                }
-            })
         except db.BadKeyError, e:
+            quote = None
+
+        if quote:
+            self.dump({
+                "id": quote.id,
+                "quote": quote.quote,
+                "created": quote.created.isoformat(),
+                "votes": quote.votes
+            })
+        else:
             self.response.set_status(404)
             self.dump({"error": "no such id"})
+
 
     def _get_all(self):
         """
@@ -51,37 +53,45 @@ class QuoteAPI(JSONDumper):
         quotes = model.QuoteDB.all()
         for quote in quotes:
             res.append({
-                "id": quote.quoteMD5,
-                "quote": quote.quoteString,
+                "id": quote.id,
+                "quote": quote.quote,
                 "created": quote.created.isoformat(),
-                "votes": {
-                    "up": quote.votesUp,
-                    "down": quote.votesDown
-                }
+                "votes": quote.votes
             })
 
         self.dump(res)
 
-    def post(self):
+    def post(self, id=None):
         """
             POST - Add a quote.
             Params: quote. If you can't figure out what that's for...
             Response: id of the new quote
         """
 
-        quoteStr = cgi.escape(self.request.get('quote').strip())
-
-        if quoteStr:
-            key   = hashlib.md5(quoteStr).hexdigest()
-            quote = model.QuoteDB(key_name=cgi.escape(key))
-            quote.quoteMD5 = key
-            quote.quoteString = quoteStr
-            quote.votesUp = 0
-            quote.votesDown = 0
-            quoteID = quote.put()
-
-            self.response.set_status(201) # created
-            self.dump({"id" : quoteID.name() })
-        else:
+        if id:
             self.response.set_status(406)
-            self.dump({"error": "need quote"})
+            self.dump({"error": "don't post to a single quote"})
+        else:
+            quote_text = self._get_arg('quote')
+
+            if quote_text:
+                id = hashlib.md5(quote_text).hexdigest()
+                quote = model.QuoteDB.get_by_key_name(id)
+
+                if not quote:
+                    quote = model.QuoteDB(key_name=id)
+                    quote.id = id
+                    quote.quote = quote_text
+                    quote.votes = 0
+                    quoteID = quote.put()
+
+                    self.response.set_status(201) # created
+                    self.dump({
+                        "id" : quoteID.name()
+                    })
+                else:
+                    self.response.set_status(403)
+                    self.dump({"error": "yo don't overwrite some other dude's quote man"})
+            else:
+                self.response.set_status(406)
+                self.dump({"error": "need quote"})

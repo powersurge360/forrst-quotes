@@ -1,9 +1,9 @@
 from google.appengine.ext import db
 
-# _________________________________________ 
+# _________________________________________
 #/ <eggsby> I know it insulted his         \
 #\ intelligence but his code insulted mine /
-# ----------------------------------------- 
+# -----------------------------------------
 #        \   ^__^
 #         \  (oo)\_______
 #            (__)\       )\/\
@@ -11,8 +11,13 @@ from google.appengine.ext import db
 #                ||     ||
 
 class QuoteDB(db.Model):
-    quoteMD5    = db.StringProperty()
-    quoteString = db.StringProperty(multiline=True)
-    created     = db.DateTimeProperty(auto_now_add=True)
-    votesUp     = db.IntegerProperty()
-    votesDown   = db.IntegerProperty()
+    id        = db.StringProperty()
+    quote     = db.StringProperty(multiline=True)
+    created   = db.DateTimeProperty(auto_now_add=True)
+    votes     = db.IntegerProperty()
+    admin_key = db.StringProperty()
+
+    def __str__(self):
+        if self.votes < 0:
+            return self.quote + ' (' + str(self.votes) + ')'
+        return self.quote + ' (+' + str(self.votes) + ')'
