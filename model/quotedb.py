@@ -15,7 +15,6 @@ class QuoteDB(db.Model):
     quote     = db.StringProperty(multiline=True)
     created   = db.DateTimeProperty(auto_now_add=True)
     votes     = db.IntegerProperty()
-    admin_key = db.StringProperty()
 
     def __str__(self):
         if self.votes < 0:
