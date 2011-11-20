@@ -26,7 +26,7 @@ class JSONDumper(webapp.RequestHandler):
         """
 
         value = self.request.get(arg_name, default)
-        if type(default) is str:
+        if issubclass(type(default), basestring):
             value = cgi.escape(value.strip())
 
         return value
