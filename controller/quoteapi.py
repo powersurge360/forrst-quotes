@@ -68,11 +68,15 @@ class QuoteAPI(JSONDumper):
         if order_by != "votes":
             order_by = "created"
 
-        if order != "ASC":
-            order = "DESC"
+        order = "" if order == "ASC" else "-"
 
         # SERIOUSLY GOOGLE Y U TROLL ME? Y U NO MAKE SYMBOLS WORK HERE?
-        quotes = model.QuoteDB.gql("ORDER BY "+order_by+" "+order+" LIMIT "+str(limit)+" OFFSET "+str(offset))
+        #quotes = model.QuoteDB.gql("ORDER BY "+order_by+" "+order+" LIMIT "+str(limit)+" OFFSET "+str(offset))
+        quotes = (model.QuoteDB.all()
+            .order(order+order_by)
+            .fetch(limit=limit, offset=offset)
+        )
+
         res = []
 
         for quote in quotes:
@@ -104,10 +108,11 @@ class QuoteAPI(JSONDumper):
                 quote = model.QuoteDB.get_by_key_name(id)
 
                 if not quote:
-                    quote = model.QuoteDB(key_name=id)
-                    quote.id = id
-                    quote.quote = quote_text
-                    quote.votes = 0
+                    quote = model.QuoteDB(
+                        id=id,
+                        quote=quote_text,
+                        votes=0,
+                    )
                     quote_date = self._parse_date(self._get_arg('date'))
                     if quote_date:
                         quote.created = quote_date
